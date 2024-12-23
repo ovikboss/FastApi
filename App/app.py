@@ -1,8 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-from DataBase.db import *
+from DataBase import *
 
 
 class Books(BaseModel):

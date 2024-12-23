@@ -3,7 +3,7 @@ from typing import List
 from typing import Optional
 from sqlalchemy import ForeignKey, String, select, delete
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
-from config import USER, DBNAME, PORT, PASSWORD
+from .config import USER, DBNAME, PORT, PASSWORD
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -73,7 +73,7 @@ async def main():
 
     # await create_book("Преступление и Наказание", "Фёдор Достоевский", "Роман")
     # result = asyncio.create_task(get_all_books())
-    result1 = asyncio.create_task(get_book(0))
+    result1 = asyncio.create_task(get_book(1))
     # print(*await result,sep="\n")
     print(*await result1, sep="\n")
     await engine.dispose()
