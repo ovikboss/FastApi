@@ -1,9 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from fastapi import FastAPI, Form, Depends, UploadFile
 from pydantic import BaseModel
 
-from db import *
+from DataBase.db import *
 
 
 class Books(BaseModel):
