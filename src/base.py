@@ -5,3 +5,7 @@ class Books(BaseModel):
     author: str
     genre: str
     text: str | None = None
+
+class ItemUpdate(BaseModel):
+    field: str
+    value: str

@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
 from typing import Optional
-from sqlalchemy import ForeignKey, String, select, delete
+from sqlalchemy import ForeignKey, String, select, delete, update
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 from .config import USER, DBNAME, PORT, PASSWORD
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,23 +68,34 @@ class DataBase:
             print(ex)
 
 
-    def change_book(self):
-        pass
+    async def change_book(self,id, column ,new_value):
+        try:
+            async with AsyncSession(self.engine) as session:
+                print(column)
+                match column:
+                    case "book_name":
+                        stmt = update(Book).where(Book.id == id).values(book_name = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+                    case "text":
+                        stmt = update(Book).where(Book.id == id).values(text = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+                    case "genre":
+                        stmt = update(Book).where(Book.id == id).values(genre = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+            return "Changed"
+        except Exception as ex:
+            print(ex)
+    
+    async def remove_book(self, ID:int):
+        try:
+            async with AsyncSession(self.engine) as session:
+                stmt = delete(Book).where(Book.id == ID)
+                result = await session.execute(stmt)
+                await session.commit()
+            return "Deleted"
+        except Exception as ex:
+            print(ex)
 
-
-
-async def main():
-    db = DataBase()
-    async with db.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    # await create_book("Преступление и Наказание", "Фёдор Достоевский", "Роман")
-    # result = asyncio.create_task(db.get_all_books())
-    result1 = asyncio.create_task(db.get_book(1))
-    # print(*await result,sep="\n")
-    print(*await result1, sep="\n")
-    await db.engine.dispose()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

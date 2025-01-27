@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from .base import  Books
+from .base import  Books, ItemUpdate
 from .DB.db import *
 
 
@@ -36,6 +36,22 @@ async def get_books():
         return await result1
     except:
         return "404"
+
+@app.get("/book_delete/{id}")
+async def book_delete(id:int):
+    try:
+        result = asyncio.create_task(data_base.remove_book(id))
+        return await result
+    except Exception as ex:
+        return "error"
+
+@app.put("/change_book/{id}")
+async def book_delete(id:int, item_update:ItemUpdate):
+    try:
+        result = asyncio.create_task(data_base.change_book(id, item_update.field, item_update.value))
+        return await result
+    except Exception as ex:
+        return "error"
 
 
 if __name__ == "__main__":
