@@ -1,7 +1,7 @@
 import uvicorn
 
 from fastapi import APIRouter
-from src.routes.base import  Books, ItemUpdate
+from src.routes.base import  Books, ItemUpdate,Subscribe
 from src.DB.db import *
 
 
@@ -54,6 +54,14 @@ async def book_delete(id:int, item_update:ItemUpdate):
     except Exception as ex:
         return "error"
 
+@router.get("/subscribe/{book_id}/{user_id}")
+async def get_user_book(book_id, user_id):
+    result1 = asyncio.create_task(data_base.subscribe(user_id = int(user_id), book_id= int(book_id)))
+    return await result1
 
-if __name__ == "__main__":
-    uvicorn.run("routes:app")
+
+@router.get("/user/{user_id}")
+async def subscribe_book(user_id):
+    result1 = asyncio.create_task(data_base.get_user_book(user_id = int(user_id)))
+    return await result1
+

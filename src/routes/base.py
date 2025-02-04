@@ -9,3 +9,7 @@ class Books(BaseModel):
 class ItemUpdate(BaseModel):
     field: str
     value: str
+
+class Subscribe(BaseModel):
+    user_id:int
+    book_id:int

@@ -1,30 +1,14 @@
 import asyncio
 from typing import List
 from typing import Optional
-from sqlalchemy import ForeignKey, String, select, delete, update
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+from sqlalchemy import  select, delete, update
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from .config import USER, DBNAME, PORT, PASSWORD
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
-
-engine = create_async_engine(f"postgresql+asyncpg://{USER}:{PASSWORD}@localhost:{PORT}/{DBNAME}",
-                             isolation_level="SERIALIZABLE", )
+from .models import Book,UserBook, User
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class Book(Base):
-    __tablename__ = "books"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    book_name: Mapped[str] = mapped_column(String(30))
-    author: Mapped[str] = mapped_column(String(30))
-    genre: Mapped[str]
-    text: Mapped[Optional[str]]
-
-    def __repr__(self) -> str:
-        return f"Book(id={self.id!r}, book_name={self.book_name!r}, Author={self.author!r})"
 
 
 class DataBase:
@@ -98,4 +82,31 @@ class DataBase:
             return "Deleted"
         except Exception as ex:
             print(ex)
+
+    async def subscribe(self, user_id, book_id):
+        try:
+            async with AsyncSession(self.engine) as session:
+                user_book = UserBook(user_id = user_id, book_id = book_id )
+                async with session.begin():
+                    session.add_all([user_book])
+
+        except Exception as ex:
+            print(ex)
+
+    async def get_user_book(self, user_id):
+        try:
+            data = []
+            async with AsyncSession(self.engine) as session:
+                stmt = select(Book).where(Book.id.in_(select(UserBook.book_id).where(UserBook.user_id == user_id)))
+                result = await session.execute(stmt)
+                print(stmt)
+                for cont in result.scalars(stmt):
+                    data.append(cont)
+                return data
+        except Exception as ex:
+            print(ex)
+
+
+
+
 
