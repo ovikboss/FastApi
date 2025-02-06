@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр книги</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Чтобы <html> и <body> занимали всю доступную высоту */
+        html, body {
+            height: 100%;
+            margin: 0; /* Убираем стандартные отступы */
+            overflow: hidden; /* Предотвращаем прокрутку, если PDF больше экрана */
+        }
+
+        /* Растягиваем контейнер на весь экран */
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 0; /* Убираем отступы контейнера Bootstrap */
+        }
+
+        /* Стили для <a> - убраны, он не нужен для отображения PDF на весь экран */
+
+        /* Растягиваем embed на весь контейнер */
+        #book_text {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark  bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/html/about.html"><ya-tr-span data-index="1-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Carousel" data-translation="Карусель" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">О нас</ya-tr-span></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Переключение навигации">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="" href="/html/getbooks.html"><ya-tr-span data-index="2-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Home" data-translation="Главная" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">Главная</ya-tr-span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/html/reg.html"><ya-tr-span data-index="3-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Link" data-translation="Ссылка" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">Регистрация</ya-tr-span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/html/auth.html" aria-disabled="true"><ya-tr-span data-index="4-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Disabled" data-translation="Отключен" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">Авторизация</ya-tr-span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/html/mybooks.html" aria-disabled="true"><ya-tr-span data-index="4-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Disabled" data-translation="Отключен" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">Мои книги</ya-tr-span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/html/index.html" aria-disabled="true"><ya-tr-span data-index="4-0" data-translated="true" data-source-lang="en" data-target-lang="ru" data-value="Disabled" data-translation="Отключен" data-ch="0" data-type="trSpan" style="visibility: inherit !important;">Добавить новую книгу</ya-tr-span></a>
+              </li>
+              <li>
+                <button class = "btn btn-primary btn-lg float-end" id = "exit" onclick=exit()></button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    <div class="container">
+        <a id="book"></a>
+        <embed id="book_text" src="" type="application/pdf" alt = "Не готово">
+    </div>
+    <script src = "../js/exit.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/getbook.js"></script>
+</body>
+</html>

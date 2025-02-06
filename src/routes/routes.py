@@ -73,3 +73,8 @@ async def auth(user: UserAuth):
 @router.post("/reg")
 async def reg(user: UserData):
     return  await data_base.reg(username= user.username, password = user.password, email= user.email)
+
+@router.get("/unsubscribe/{book_id}/{user_id}")
+async def subscribe_book(book_id, user_id):
+    result1 = asyncio.create_task(data_base.unsubscribe(user_id = int(user_id), book_id= int(book_id)))
+    return await result1

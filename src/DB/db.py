@@ -85,10 +85,16 @@ class DataBase:
 
     async def subscribe(self, user_id, book_id):
         try:
+
             async with AsyncSession(self.engine) as session:
-                user_book = UserBook(user_id = user_id, book_id = book_id )
-                async with session.begin():
+                stmt = select(exists().where(UserBook.book_id == book_id).where(UserBook.user_id == user_id))
+                result = await session.execute(stmt)
+                exists_book = result.scalars().first()
+                print(exists_book)
+                if not exists_book :
+                    user_book = UserBook(user_id = user_id, book_id = book_id )
                     session.add_all([user_book])
+                    await session.commit()
 
         except Exception as ex:
             print(ex)
@@ -131,6 +137,15 @@ class DataBase:
         except Exception as ex:
             print(ex)
 
-
+    async def unsubscribe(self, user_id, book_id):
+        try:
+            async with AsyncSession(self.engine) as session:
+                stmt = delete(UserBook).where(UserBook.user_id == user_id).where(UserBook.book_id == book_id)
+                print(stmt)
+                await session.execute(stmt)
+                await session.commit()
+            return "Удалено"
+        except Exception as ex:
+            print(ex)
 
 
