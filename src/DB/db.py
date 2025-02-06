@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
 from typing import Optional
-from sqlalchemy import  select, delete, update
+from sqlalchemy import  select, delete, update, exists
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from .config import USER, DBNAME, PORT, PASSWORD
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -106,6 +106,30 @@ class DataBase:
         except Exception as ex:
             print(ex)
 
+    async def reg(self, username, password, email):
+        try:
+            async with AsyncSession(self.engine) as session:
+                user = User(username = username, password = password, email = email)
+                async with session.begin():
+                    session.add_all([user])
+                stmt1 = select(User.id).where(User.username == username and User.password == password)
+                result = await session.execute(stmt1)
+            return result.scalar_one()
+
+        except Exception as ex:
+            print(ex)
+
+    async def auth(self, username, password):
+        try:
+            async with AsyncSession(self.engine) as session:
+               stmt = select(exists().where(User.username == username and User.password == password))
+               result = await session.execute(stmt)
+               if result:
+                   stmt1 = select(User.id).where(User.username == username and User.password == password)
+                   result = await session.execute(stmt1)
+               return result.scalar_one()
+        except Exception as ex:
+            print(ex)
 
 
 

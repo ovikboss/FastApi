@@ -1,7 +1,8 @@
 import uvicorn
 
 from fastapi import APIRouter
-from src.routes.base import  Books, ItemUpdate,Subscribe
+from src.routes.base import  Books, ItemUpdate,Subscribe, UserAuth
+from src.routes.base import UserData
 from src.DB.db import *
 
 
@@ -11,7 +12,7 @@ data_base = DataBase()
 
 @router.post("/addbook/")
 async def addbook(book: Books):
-    print(book.author)
+    print(book)
     asyncio.create_task(data_base.create_book(book.title, book.author, book.genre))
     return "Книга добавлена"
 
@@ -55,13 +56,20 @@ async def book_delete(id:int, item_update:ItemUpdate):
         return "error"
 
 @router.get("/subscribe/{book_id}/{user_id}")
-async def get_user_book(book_id, user_id):
+async def subscribe_book(book_id, user_id):
     result1 = asyncio.create_task(data_base.subscribe(user_id = int(user_id), book_id= int(book_id)))
     return await result1
 
 
 @router.get("/user/{user_id}")
-async def subscribe_book(user_id):
+async def get_my_book(user_id):
     result1 = asyncio.create_task(data_base.get_user_book(user_id = int(user_id)))
     return await result1
 
+@router.post("/auth")
+async def auth(user: UserAuth):
+    return await data_base.auth(username= user.username, password=user.password)
+
+@router.post("/reg")
+async def reg(user: UserData):
+    return  await data_base.reg(username= user.username, password = user.password, email= user.email)
