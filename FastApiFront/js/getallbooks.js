@@ -1,7 +1,7 @@
 // Функция для получения данных
 async function fetchBooks() {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/books`); // Пример API
+        const response = await fetch(`https://backend.cloudpub.ru/books`); // Пример API
         const data = await response.json();
 
         displayData(data);

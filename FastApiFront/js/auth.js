@@ -13,7 +13,7 @@ if (addbook) {
 
     try {
         // Отправляем данные на сервер
-        const response = await fetch('http://127.0.0.1:8000/auth/', {
+        const response = await fetch('https://backend.cloudpub.ru/auth/', {
             method: 'POST',
             headers: {
                 'Cache-Control': 'no-cache',

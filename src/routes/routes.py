@@ -1,11 +1,12 @@
 import uvicorn
-
+from fastapi.templating import Jinja2Templates
 from fastapi import APIRouter
 from src.routes.base import  Books, ItemUpdate,Subscribe, UserAuth
 from src.routes.base import UserData
 from src.DB.db import *
+from fastapi import  Request
 
-
+templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 data_base = DataBase()
@@ -20,6 +21,11 @@ async def addbook(book: Books):
 @router.get("/")
 async def index():
     return "hello world"
+
+@router.get("/about")
+async def about(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request, "message": "Добро пожаловать!!", 'title': 'О нас'})
+
 
 
 @router.get("/books/{id}")

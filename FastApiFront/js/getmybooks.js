@@ -1,8 +1,8 @@
 async function fetchBook(){
     try {
         const user_id = sessionStorage.getItem("userid")
-        console.log(`http://127.0.0.1:8000//user/${Number(user_id)}`)
-        const response = await fetch(`http://127.0.0.1:8000/user/${Number(user_id)}`);
+        console.log(`https://friskily-on-okapi.cloudpub.ru/user/${Number(user_id)}`)
+        const response = await fetch(`https://backend.cloudpub.ru/user/${Number(user_id)}`);
         const data = await response.json();
         console.log(data)
         displayData(data);

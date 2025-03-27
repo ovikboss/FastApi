@@ -26,6 +26,7 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(30))
     email: Mapped[str] = mapped_column(String(30),unique=True)
 
+
 class UserBook(Base):
     __tablename__ = "user_book"
     id: Mapped[int] = mapped_column(primary_key=True)
