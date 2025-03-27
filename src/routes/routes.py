@@ -17,6 +17,10 @@ async def addbook(book: Books):
     asyncio.create_task(data_base.create_book(book.title, book.author, book.genre))
     return "Книга добавлена"
 
+@router.get("/ping")
+async def pong():
+    data = {"message":"pong"}
+    return data
 
 @router.get("/")
 async def index():
