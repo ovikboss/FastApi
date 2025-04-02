@@ -1,30 +1,14 @@
 import asyncio
 from typing import List
 from typing import Optional
-from sqlalchemy import ForeignKey, String, select, delete
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+from sqlalchemy import  select, delete, update, exists
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from .config import USER, DBNAME, PORT, PASSWORD
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
-
-engine = create_async_engine(f"postgresql+asyncpg://{USER}:{PASSWORD}@localhost:{PORT}/{DBNAME}",
-                             isolation_level="SERIALIZABLE", )
+from .models import Book,UserBook, User
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class Book(Base):
-    __tablename__ = "books"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    book_name: Mapped[str] = mapped_column(String(30))
-    author: Mapped[str] = mapped_column(String(30))
-    genre: Mapped[str]
-    text: Mapped[Optional[str]]
-
-    def __repr__(self) -> str:
-        return f"Book(id={self.id!r}, book_name={self.book_name!r}, Author={self.author!r})"
 
 
 class DataBase:
@@ -68,23 +52,100 @@ class DataBase:
             print(ex)
 
 
-    def change_book(self):
-        pass
+    async def change_book(self,id, column ,new_value):
+        try:
+            async with AsyncSession(self.engine) as session:
+                print(column)
+                match column:
+                    case "book_name":
+                        stmt = update(Book).where(Book.id == id).values(book_name = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+                    case "text":
+                        stmt = update(Book).where(Book.id == id).values(text = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+                    case "genre":
+                        stmt = update(Book).where(Book.id == id).values(genre = new_value)
+                        await session.execute(stmt)
+                        await session.commit()
+            return "Changed"
+        except Exception as ex:
+            print(ex)
+    
+    async def remove_book(self, ID:int):
+        try:
+            async with AsyncSession(self.engine) as session:
+                stmt = delete(Book).where(Book.id == ID)
+                result = await session.execute(stmt)
+                await session.commit()
+            return "Deleted"
+        except Exception as ex:
+            print(ex)
+
+    async def subscribe(self, user_id, book_id):
+        try:
+
+            async with AsyncSession(self.engine) as session:
+                stmt = select(exists().where(UserBook.book_id == book_id).where(UserBook.user_id == user_id))
+                result = await session.execute(stmt)
+                exists_book = result.scalars().first()
+                print(exists_book)
+                if not exists_book :
+                    user_book = UserBook(user_id = user_id, book_id = book_id )
+                    session.add_all([user_book])
+                    await session.commit()
+
+        except Exception as ex:
+            print(ex)
+
+    async def get_user_book(self, user_id):
+        try:
+            data = []
+            async with AsyncSession(self.engine) as session:
+                stmt = select(Book).where(Book.id.in_(select(UserBook.book_id).where(UserBook.user_id == user_id)))
+                result = await session.execute(stmt)
+                print(stmt)
+                for cont in result.scalars(stmt):
+                    data.append(cont)
+                return data
+        except Exception as ex:
+            print(ex)
+
+    async def reg(self, username, password, email):
+        try:
+            async with AsyncSession(self.engine) as session:
+                user = User(username = username, password = password, email = email)
+                async with session.begin():
+                    session.add_all([user])
+                stmt1 = select(User.id).where(User.username == username and User.password == password)
+                result = await session.execute(stmt1)
+            return result.scalar_one()
+
+        except Exception as ex:
+            print(ex)
+
+    async def auth(self, username, password):
+        try:
+            async with AsyncSession(self.engine) as session:
+               stmt = select(exists().where(User.username == username and User.password == password))
+               result = await session.execute(stmt)
+               if result:
+                   stmt1 = select(User.id).where(User.username == username and User.password == password)
+                   result = await session.execute(stmt1)
+               return result.scalar_one()
+        except Exception as ex:
+            print(ex)
+
+    async def unsubscribe(self, user_id, book_id):
+        try:
+            async with AsyncSession(self.engine) as session:
+                stmt = delete(UserBook).where(UserBook.user_id == user_id).where(UserBook.book_id == book_id)
+                print(stmt)
+                await session.execute(stmt)
+                await session.commit()
+            return "Удалено"
+        except Exception as ex:
+            print(ex)
 
 
-
-async def main():
-    db = DataBase()
-    async with db.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    # await create_book("Преступление и Наказание", "Фёдор Достоевский", "Роман")
-    # result = asyncio.create_task(db.get_all_books())
-    result1 = asyncio.create_task(db.get_book(1))
-    # print(*await result,sep="\n")
-    print(*await result1, sep="\n")
-    await db.engine.dispose()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

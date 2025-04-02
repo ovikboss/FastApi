@@ -1,1 +1,1 @@
-modules = list(("config", ".db"))
+modules = list((".config", ".db", "models"))
